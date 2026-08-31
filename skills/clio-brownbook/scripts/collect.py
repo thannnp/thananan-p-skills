@@ -220,6 +220,26 @@ def collect_commits(since: dt.date, until: dt.date) -> list[dict]:
 
 # ---------- 4. สิ่งที่เจ้าของพิมพ์ ----------
 
+# คีย์ที่โผล่ในบทสนทนาได้จริง — เจ้าของวาง token ลงแชทเพื่อให้ช่วยตั้งค่าเป็นเรื่องปกติ
+# ต้องกรองตั้งแต่ตอนเก็บ ไม่ใช่ตอน publish เพราะไฟล์ที่เก็บไว้ในเครื่องก็ไม่ควรมี
+SECRET_PATTERNS = (
+    re.compile(r"\bgh[pousr]_[A-Za-z0-9]{20,}"),               # GitHub PAT แบบเก่า
+    re.compile(r"\bgithub_pat_[A-Za-z0-9_]{20,}"),             # GitHub PAT แบบ fine-grained
+    re.compile(r"\bAKIA[0-9A-Z]{16}\b"),                       # AWS access key id
+    re.compile(r"\baws_secret_access_key\s*=\s*\S+", re.I),
+    re.compile(r"\bsk-[A-Za-z0-9_-]{20,}"),                     # OpenAI / OpenRouter
+    re.compile(r"\bxox[abprs]-[A-Za-z0-9-]{10,}"),              # Slack
+    re.compile(r"\bBearer\s+[A-Za-z0-9._~+/-]{20,}=*"),
+    re.compile(r"-----BEGIN[A-Z ]*PRIVATE KEY-----[\s\S]*?-----END[A-Z ]*PRIVATE KEY-----"),
+)
+
+
+def scrub_secrets(text: str) -> str:
+    for pat in SECRET_PATTERNS:
+        text = pat.sub("[ตัดคีย์ออก]", text)
+    return text
+
+
 NOISE_PREFIX = ("<command-name>", "<local-command-stdout>", "<system-reminder>",
                 "Caveat:", "<command-message>", "[Request interrupted",
                 "<user-prompt-submit-hook>", "API Error")
@@ -268,6 +288,7 @@ def collect_prompts(since: dt.date, until: dt.date) -> list[dict]:
                     continue
                 cwd = d.get("cwd") or "?"
                 key = os.path.relpath(cwd, HOME) if cwd.startswith(HOME) else cwd
+                txt = scrub_secrets(txt)
                 by_project.setdefault(key, []).append({
                     "at": d.get("timestamp"),
                     "branch": d.get("gitBranch") or "",
