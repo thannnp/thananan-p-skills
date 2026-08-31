@@ -34,11 +34,12 @@ required_environment_variables:
 
 ## คำสั่ง
 
-สกิลนี้ลงได้สองที่ หาสคริปต์ให้เจอก่อนด้วยสองบรรทัดนี้
+สกิลนี้ลงได้หลายที่ หาสคริปต์ให้เจอก่อนด้วยสามบรรทัดนี้ อย่าเดา path เอง
 
 ```bash
-S="$HERMES_HOME/skills/quintaura/clio-echo/scripts"          # บน Hermes (เมานต์จาก repo)
-[ -d "$S" ] || S="$HOME/.claude/skills/clio-echo/scripts"    # ลงด้วย npx skills add
+for c in "$HERMES_HOME"/skills/*/clio-echo/scripts "$HERMES_HOME"/skills/clio-echo/scripts \
+         "$HOME"/.claude/skills/clio-echo/scripts; do [ -d "$c" ] && S="$c" && break; done
+[ -n "${S:-}" ] || echo "หาโฟลเดอร์สคริปต์ของ clio-echo ไม่เจอ — ยังไม่ได้ลง หรือลงไว้ที่อื่น"
 
 python3 $S/read_log.py --latest            # อ่านใบล่าสุด
 python3 $S/read_log.py --week 2026-W35     # อ่านใบที่ระบุ
