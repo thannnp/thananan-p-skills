@@ -105,7 +105,7 @@ def resolve_range(a) -> tuple[dt.date, dt.date, str]:
 def collect_prs(since: dt.date, until: dt.date, flag: str) -> list[dict]:
     rng = f"{since.isoformat()}..{until.isoformat()}"
     found = gh_json([
-        "search", "prs", flag, GH_LOGIN, "--updated", rng, "--limit", "60",
+        "search", "prs", flag, GH_LOGIN, "--updated", rng, "--limit", "500",
         "--json", "url,title,repository,state,createdAt,updatedAt,number",
     ])
     out = []
@@ -153,7 +153,7 @@ def collect_issues(since: dt.date, until: dt.date) -> list[dict]:
     rng = f"{since.isoformat()}..{until.isoformat()}"
     found = gh_json([
         "search", "issues", "--involves", GH_LOGIN, "--updated", rng,
-        "--limit", "40", "--json",
+        "--limit", "300", "--json",
         "url,title,repository,state,number,createdAt,updatedAt,closedAt,labels,body",
     ])
     out = []
@@ -220,6 +220,21 @@ def collect_commits(since: dt.date, until: dt.date) -> list[dict]:
 
 # ---------- 4. สิ่งที่เจ้าของพิมพ์ ----------
 
+NOISE_PREFIX = ("<command-name>", "<local-command-stdout>", "<system-reminder>",
+                "Caveat:", "<command-message>", "[Request interrupted",
+                "<user-prompt-submit-hook>", "API Error")
+
+
+def text_of(content) -> str:
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = [b.get("text", "") for b in content
+                 if isinstance(b, dict) and b.get("type") == "text"]
+        return "\n".join(parts)
+    return ""
+
+
 # คีย์ที่โผล่ในบทสนทนาได้จริง — เจ้าของวาง token ลงแชทเพื่อให้ช่วยตั้งค่าเป็นเรื่องปกติ
 # ต้องกรองตั้งแต่ตอนเก็บ ไม่ใช่ตอน publish เพราะไฟล์ที่เก็บไว้ในเครื่องก็ไม่ควรมี
 SECRET_PATTERNS = (
@@ -238,21 +253,6 @@ def scrub_secrets(text: str) -> str:
     for pat in SECRET_PATTERNS:
         text = pat.sub("[ตัดคีย์ออก]", text)
     return text
-
-
-NOISE_PREFIX = ("<command-name>", "<local-command-stdout>", "<system-reminder>",
-                "Caveat:", "<command-message>", "[Request interrupted",
-                "<user-prompt-submit-hook>", "API Error")
-
-
-def text_of(content) -> str:
-    if isinstance(content, str):
-        return content
-    if isinstance(content, list):
-        parts = [b.get("text", "") for b in content
-                 if isinstance(b, dict) and b.get("type") == "text"]
-        return "\n".join(parts)
-    return ""
 
 
 def collect_prompts(since: dt.date, until: dt.date) -> list[dict]:
@@ -286,9 +286,9 @@ def collect_prompts(since: dt.date, until: dt.date) -> list[dict]:
                     continue
                 if src is None and not txt[:1].isalnum() and not ord(txt[:1]) > 3000:
                     continue
+                txt = scrub_secrets(txt)
                 cwd = d.get("cwd") or "?"
                 key = os.path.relpath(cwd, HOME) if cwd.startswith(HOME) else cwd
-                txt = scrub_secrets(txt)
                 by_project.setdefault(key, []).append({
                     "at": d.get("timestamp"),
                     "branch": d.get("gitBranch") or "",
@@ -305,7 +305,7 @@ def collect_prompts(since: dt.date, until: dt.date) -> list[dict]:
 
 # ---------- งานนี้ไปถึง dev หรือ prod แล้ว ----------
 
-DEV_BRANCHES = ("dev", "development", "staging", "backoffice-dev")
+DEV_BRANCHES = ("dev", "develop", "development", "staging", "backoffice-dev")
 ENV_HINT = {"prod": ("prod", "production"), "dev": ("dev", "development", "staging")}
 
 

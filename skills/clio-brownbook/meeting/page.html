@@ -1,0 +1,238 @@
+<title>Brownbook Monday Report</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<style>
+/* Layout: notebook cover band on top, project tabs, then a single reading column of story cards */
+:root{
+  --bg:#f3f1ee; --paper:#fbfaf8; --ink:#1f2328; --muted:#5d6670; --line:#dcd7d0;
+  --cover:#6b4a2e; --cover-ink:#fbf6ef; --accent:#8a5a2b;
+  --ok:#1f7a4d; --ok-bg:#e3f2ea; --dev:#9a6a00; --dev-bg:#fbf0d6;
+  --study:#3b5bab; --study-bg:#e6ecf8; --urgent:#b3261e; --urgent-bg:#fbe4e2;
+  --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#17181a; --paper:#202225; --ink:#e9e6e1; --muted:#a3a7ad; --line:#34373b;
+  --cover:#3d2b1c; --cover-ink:#f3e9dc; --accent:#d29a62;
+  --ok:#6fd3a0; --ok-bg:#1d3329; --dev:#e9bd55; --dev-bg:#382f17;
+  --study:#9db4f2; --study-bg:#232c45; --urgent:#f19c94; --urgent-bg:#432422; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17181a; --paper:#202225; --ink:#e9e6e1; --muted:#a3a7ad; --line:#34373b;
+  --cover:#3d2b1c; --cover-ink:#f3e9dc; --accent:#d29a62;
+  --ok:#6fd3a0; --ok-bg:#1d3329; --dev:#e9bd55; --dev-bg:#382f17;
+  --study:#9db4f2; --study-bg:#232c45; --urgent:#f19c94; --urgent-bg:#432422; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:400 16px/1.65 var(--f-body)}
+.wrap{max-width:820px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.cover{background:var(--cover);color:var(--cover-ink)}
+header.cover .wrap{padding-block:28px 24px;display:grid;gap:14px}
+.eyebrow{font:500 13px/1 var(--f-num);letter-spacing:.08em;opacity:.8}
+h1{font:700 clamp(26px,5vw,36px)/1.2 var(--f-display);margin:0;text-wrap:balance}
+.totals{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:15px}
+.totals b{font:500 20px/1 var(--f-num);font-variant-numeric:tabular-nums;margin-right:6px}
+.legend{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto;padding-block:10px}
+.tab{font:600 15px/1 var(--f-display);border:0;background:none;color:var(--muted);padding:9px 12px;border-radius:8px;cursor:pointer;white-space:nowrap;display:flex;gap:6px;align-items:center}
+.tab .n{font:500 12px/1 var(--f-num);color:var(--muted)}
+.tab[aria-selected="true"]{background:var(--paper);color:var(--ink);box-shadow:inset 0 -2px 0 var(--accent)}
+.tab:focus-visible,.chip:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main .wrap{padding-block:20px 48px;display:grid;gap:28px}
+.filters{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:500 14px/1 var(--f-body);border:1px solid var(--line);background:var(--paper);color:var(--ink);padding:8px 12px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{border-color:var(--accent);color:var(--accent)}
+section.proj{display:grid;gap:10px}
+h2{font:700 22px/1.3 var(--f-display);margin:0;display:flex;align-items:baseline;gap:10px}
+h2 small{font:500 13px var(--f-num);color:var(--muted)}
+.story{background:var(--paper);border:1px solid var(--line);border-radius:10px}
+.story summary{list-style:none;cursor:pointer;padding:14px 16px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start}
+.story summary::-webkit-details-marker{display:none}
+.story .num{font:500 14px/1.7 var(--f-num);color:var(--muted)}
+.story h3{font:600 17px/1.5 var(--f-display);margin:0;min-width:0}
+.story .gist{display:block;font:400 14.5px/1.55 var(--f-body);color:var(--muted);margin-top:2px}
+.pill{font:600 12.5px/1 var(--f-body);padding:6px 9px;border-radius:999px;white-space:nowrap}
+.s-prod{background:var(--ok-bg);color:var(--ok)} .s-dev{background:var(--dev-bg);color:var(--dev)}
+.s-study{background:var(--study-bg);color:var(--study)} .s-urgent{background:var(--urgent-bg);color:var(--urgent)}
+.story .body{padding:0 16px 14px 44px;display:grid;gap:8px}
+.story ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.refs{font:500 12.5px/1.6 var(--f-num);color:var(--muted);overflow-wrap:anywhere}
+.chev{transition:transform .15s}
+.story[open] .chev{transform:rotate(90deg)}
+.plain{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.plain ol,.plain ul{margin:0;padding-left:22px;display:grid;gap:8px}
+.plain .tagp{font:500 12px var(--f-num);color:var(--accent);margin-left:6px}
+.empty{color:var(--muted);font-size:15px}
+footer{color:var(--muted);font-size:13px}
+@media (max-width:520px){.story .body{padding-left:16px}.story summary{grid-template-columns:1fr auto}.story .num{display:none}}
+@media (prefers-reduced-motion:reduce){.chev{transition:none}}
+</style>
+
+<script id="report" type="application/json">
+{
+ "week":"2026-W45","range":"2–8 พ.ย. 2569","updated":"9 พ.ย. 2569",
+ "totals":{"prs":151,"prod":75,"dev":75,"issues":3},
+ "projects":[
+  {"key":"horo","name":"Horo","items":[
+   {"status":"prod","title":"ใบกำกับภาษีผ่าน FlowAccount ใช้งานจริงแล้ว","gist":"แอดมินออกใบกำกับให้ลูกค้าได้จากระบบงาน ไม่ต้องไปพิมพ์ใน FlowAccount เอง",
+    "points":["ออกใบเป็น \"ชำระแล้ว\" ได้ทันที และย้อนวันที่ได้เกินหนึ่งเดือน","ยอดผ่อนรวมค่าธรรมเนียมบัตรถูกต้องแล้ว","มีปุ่มซิงก์สถานะใบทั้งเดือน ใบ ต.ค. ที่ถูกยกเลิกกลับมาตรงกันด้วยปุ่มเดียว","หน้ารายการใบมีตัวนับตามสถานะ กดแถวแล้วเปิดงานได้เลย"],
+    "refs":"wpe-service#459–#482 · wpe-frontend#337–#358"},
+   {"status":"prod","title":"หน้าจับคู่สินค้ากับ FlowAccount อ่านง่าย พลาดยาก","gist":"แพ็กเกจนับครั้งไม่ขึ้นว่าไม่มีวันหมดอายุอีกแล้ว",
+    "points":["แพ็กเกจแอปตั้งชื่อตามระยะเวลาและราคา อ่านแล้วรู้เลยว่าตัวไหน","สินค้าที่ถูกลบไปแล้วก็จับคู่ได้ ไม่โชว์เลขรหัสดิบ","จับคู่เฉพาะตอนกดเลือกจริง และถามยืนยันก่อนบันทึกหรือลบ"],
+    "refs":"wpe-service#464–#470 · wpe-frontend#343–#347"},
+   {"status":"prod","title":"งานสิทธิ์แอปให้เลือกแพ็กเกจ แทนการพิมพ์จำนวนวัน","gist":"ปิดต้นเหตุที่ทำให้รายการจับคู่ไม่ตรงแพ็กเกจจริง",
+    "points":["แอปที่มีแพ็กเกจแล้ว ระบบไม่ยอมให้พิมพ์จำนวนวันเอง"],
+    "refs":"wpe-service#471, #474 · wpe-frontend#348–#349"},
+   {"status":"prod","title":"ลิงก์ชำระเงิน: สวิตช์ผ่อน 0% และโชว์ค่าธรรมเนียมบัตร","gist":"แอดมินเห็นยอดค่าธรรมเนียมเป็นตัวเงินก่อนส่งลิงก์",
+    "points":["ผ่อน 0% เป็นสวิตช์อยู่ใต้ตัวเลือกผ่อน กดง่ายขึ้น"],
+    "refs":"backoffice#932–#935 · wpe-frontend#339–#342"},
+   {"status":"prod","title":"แลกรางวัล: แสดง \"รอชำระ\" และ \"รอจัดส่ง\"","gist":"ลูกค้าเห็นสถานะในหน้ารางวัลของฉัน แอดมินเห็นในหน้าคำสั่งแลก",
+    "points":[],"refs":"backoffice#938 · reward-service#40 · frontend#264"},
+   {"status":"prod","title":"แจ้งแอดมินเมื่อเงินเข้าหลังแลกรางวัลหมดเวลา","gist":"ทำเสร็จในสัปดาห์นี้ ขึ้น prod วันจันทร์ 9 พ.ย.",
+    "points":[],"refs":"backoffice#939 → #941"},
+   {"status":"prod","title":"สมพงษ์คู่ใช้ได้แม้ไม่ทราบเวลาเกิด","gist":"ลูกค้าที่กด \"ไม่ทราบเวลาเกิด\" ไม่เจอ error อีกแล้ว",
+    "points":["ตรวจแล้วว่าคนที่เคยเจอ error ถูกหักสิทธิ์ไปหรือไม่","แก้ชื่อที่ลูกค้าพิมพ์ผิดให้"],
+    "refs":"backoffice#929–#930"},
+   {"status":"dev","title":"เกมไพ่ยิปซีหนูเผือก ครบทุกจอ","gist":"ทำครบบน dev แล้ว รอทดสอบใน TikTok ก่อนขึ้นจริง",
+    "points":["สำรับหนูเผือกปลดล็อกเมื่อเก็บไพ่ใหญ่ครบ 22 ใบ สลับสำรับได้","ไพ่คลาสสิก 78 ใบ สมุดสะสมแบบสติกเกอร์","ไพ่ประจำตัวและไพ่เสริมดวง","คำทำนายแบบยาว โฆษณาแลกรางวัล และภารกิจ TikTok พร้อมบัตรเปิดฟรี"],
+    "refs":"tarot-minigame-native#2–#45 · tiktok-minigames#1–#8"},
+   {"status":"dev","title":"หน้าข้อตกลงและความเป็นส่วนตัวของหนูเผือก","gist":"อยู่บน dev แล้ว รอกดขึ้นจริง",
+    "points":[],"refs":"elearning-frontend#241–#243"},
+   {"status":"prod","title":"ที่เก็บรูปไพ่หนูเผือก","gist":"รูปไพ่โหลดเร็วผ่าน CDN และเปิดในเบราว์เซอร์ได้",
+    "points":[],"refs":"iac-gitops#127"},
+   {"status":"prod","title":"คู่มือระบบ Horo สำหรับ Claude อัปเดตตรงกับโค้ดล่าสุด","gist":"ถามเรื่องระบบแล้วได้คำตอบที่ตรงของจริง",
+    "points":[],"refs":"horoacademy-claude-skills#1–#2"}
+  ]},
+  {"key":"tongru","name":"Tongru Academy","items":[
+   {"status":"prod","title":"เปลี่ยนชื่อแบรนด์เป็น Tongru Academy","gist":"เว็บและหน้าแอดมินใช้ชื่อใหม่ทั้งหมดแล้ว",
+    "points":["หน้าแรกมีการ์ดโน้ตคำถาม และโลโก้สีขาวสำหรับโหมดมืด","ตั้งระบบ deploy ของ dev และเว็บตัวอย่าง"],
+    "refs":"tongruacademy#42–#71, #79"},
+   {"status":"dev","title":"ฟีเจอร์คอมมูนิตี้ชุดใหม่","gist":"อยู่บน dev ยังไม่ได้ขึ้นจริง",
+    "points":["เช็กลิสต์ตั้งค่าคอมมูนิตี้สำหรับเจ้าของ และแท็บแพ็กเกจ","ยืนยันเบอร์โทรก่อนสร้างคอมมูนิตี้หรือจ่ายเงิน","แอดมินเข้าด้วยอีเมลและรหัสผ่าน","ฟอร์มบัญชีรับเงินแบบอัปโหลดเอกสาร","ซ่อนคอมมูนิตี้ที่ยังไม่เสร็จจากหน้าสาธารณะ"],
+    "refs":"tongruacademy#76–#108"},
+   {"status":"dev","title":"ย้ายระบบทดสอบโค้ด เครื่อง และโดเมน","gist":"ทดสอบโค้ดบนเครื่องของเราเอง ไม่ต้องจ่ายค่า GitHub Actions",
+    "points":["มีตัวกันงบ หยุดเองเมื่อเวลาเครื่องหมด","ย้ายไปเครื่องชุดใหม่และโดเมนใหม่"],
+    "refs":"tongruacademy#108"}
+  ]},
+  {"key":"tripncab","name":"TripNCab","items":[
+   {"status":"prod","title":"แก้หน้าแอดมินช้าเป็นช่วง ๆ","gist":"เพิ่มกำลังเครื่องหลังบ้าน และเก็บเวลาของแต่ละคำขอไว้ดูต่อ",
+    "points":["เพิ่มตัวรับงานจาก 5 เป็น 10","หน้าเว็บปรับจำนวนเครื่องเองตามโหลด","ยังไม่มีตัวเลขก่อน/หลัง ต้องดูต่อ"],
+    "refs":"tripncap-backend-service#226–#227 · gitops#15–#16"}
+  ]},
+  {"key":"cgos","name":"CGOS","items":[
+   {"status":"study","title":"ไล่หาสาเหตุ prod ช้า","gist":"วัดเวลาโหลดหน้า ads dashboard แล้ว ยังไม่ได้ลงมือแก้",
+    "points":[],"refs":""}
+  ]}
+ ],
+ "offgit":[
+  {"p":"horo","t":"ไล่ error สมพงษ์คู่บน prod และตรวจสิทธิ์ลูกค้าที่ได้รับผลกระทบ"},
+  {"p":"horo","t":"ตอบคำถามบัญชีเรื่องยอดโอนของ Omise ไม่ตรง และตรวจใบกำกับที่ออกผิด"},
+  {"p":"horo","t":"ออกแบบหน้าจอหนูเผือกหลายรอบ ทำคำอธิบายแอปและไอคอนสำหรับ TikTok"},
+  {"p":"tongru","t":"วางแผนปิดเครื่อง Tongru LMS และย้ายคอร์ส Facebook Ads Mastery"},
+  {"p":"tongru","t":"เทียบราคาเครื่องเพื่อสมัครบริการ SMS"},
+  {"p":"tongru","t":"ออกแบบหน้าแรกเว็บและหน้าคอมมูนิตี้ใหม่"},
+  {"p":"tongru","t":"ตั้งระบบทดสอบโค้ดใหม่ ไล่ปัญหาสิทธิ์จนส่งงานขึ้นได้"},
+  {"p":"tripncab","t":"เข้าทีม TripNCab สำรวจระบบที่รันอยู่"},
+  {"p":"cgos","t":"ไล่หาสาเหตุหน้า ads dashboard ช้า"}
+ ],
+ "next":[
+  {"p":"horo","urgent":true,"t":"หนูเผือก: ทดสอบใน TikTok แล้วขึ้นจริงทั้งเกมและหลังบ้าน"},
+  {"p":"horo","urgent":false,"t":"กดขึ้นจริงหน้าข้อตกลงหนูเผือก"},
+  {"p":"tongru","urgent":false,"t":"ขึ้นจริงฟีเจอร์คอมมูนิตี้หลังย้ายเครื่องและโดเมน"},
+  {"p":"tripncab","urgent":false,"t":"ดูเวลาของคำขอว่าหน้าแอดมินหายช้าจริงไหม"}
+ ],
+ "unsure":["เรื่องขอ IP เพื่อสมัคร SMS ใส่ไว้ใต้ Tongru ถ้าเป็นของโปรเจกต์อื่นบอกได้"]
+}
+</script>
+
+<header class="cover"><div class="wrap">
+  <div class="eyebrow" id="eyebrow"></div>
+  <h1 id="headline"></h1>
+  <div class="totals" id="totals"></div>
+  <div class="legend">
+    <span class="pill s-prod">ขึ้นจริงแล้ว</span><span class="pill s-dev">อยู่ dev</span>
+    <span class="pill s-study">ศึกษา/คุย</span><span class="pill s-urgent">เร่ง</span>
+  </div>
+</div></header>
+<nav class="tabs" aria-label="โปรเจกต์"><div class="wrap" role="tablist" id="tabs"></div></nav>
+<main><div class="wrap">
+  <div class="filters" role="group" aria-label="กรองตามสถานะ" id="filters"></div>
+  <div id="stories" style="display:grid;gap:28px"></div>
+  <section class="proj"><h2>งานที่ไม่มีในโค้ด</h2><div class="plain"><ul id="offgit"></ul></div></section>
+  <section class="proj"><h2>สัปดาห์นี้จะทำต่อ</h2><div class="plain"><ol id="next"></ol></div></section>
+  <section class="proj" id="unsureSec"><h2>ช่วยเช็ค</h2><div class="plain"><ul id="unsure"></ul></div></section>
+  <footer id="foot"></footer>
+</div></main>
+
+<script>
+(function(){
+  const R = JSON.parse(document.getElementById('report').textContent);
+  const LABEL = {prod:'ขึ้นจริงแล้ว', dev:'อยู่ dev', study:'ศึกษา/คุย', urgent:'เร่ง'};
+  const NAME = Object.fromEntries(R.projects.map(p => [p.key, p.name]));
+  const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+  let tab = 'all', filter = 'all';
+  try { tab = localStorage.getItem('bb-tab') || 'all'; } catch (e) {}
+  if (location.hash.slice(1) && (location.hash.slice(1) === 'all' || NAME[location.hash.slice(1)])) tab = location.hash.slice(1);
+  if (tab !== 'all' && !NAME[tab]) tab = 'all';
+
+  document.getElementById('eyebrow').textContent = R.week + ' · ' + R.range;
+  document.getElementById('headline').textContent = 'สัปดาห์ที่แล้ว ทำอะไรไปบ้าง';
+  const T = R.totals, tot = document.getElementById('totals');
+  [['PR', T.prs], ['ขึ้นจริง', T.prod], ['ค้าง dev', T.dev], ['ใบงาน', T.issues]].forEach(([k, v]) => {
+    const s = el('span'); s.append(el('b', null, v), k); tot.append(s);
+  });
+  document.getElementById('foot').textContent = 'อัปเดต ' + R.updated + ' จากบันทึก ' + R.week + ' ใน repo clio';
+
+  const tabs = document.getElementById('tabs');
+  const all = [{key:'all', name:'ทั้งหมด', items:R.projects.flatMap(p => p.items)}].concat(R.projects);
+  all.forEach(p => {
+    const b = el('button', 'tab'); b.setAttribute('role', 'tab'); b.dataset.k = p.key; b.id = 'tab-' + p.key;
+    b.append(p.name, el('span', 'n', p.items.length));
+    b.onclick = () => { tab = p.key; try { localStorage.setItem('bb-tab', tab); } catch (e) {} history.replaceState(null, '', '#' + tab); render(); };
+    tabs.append(b);
+  });
+  const fl = document.getElementById('filters');
+  [['all','ทุกสถานะ'],['prod','ขึ้นจริงแล้ว'],['dev','อยู่ dev'],['study','ศึกษา/คุย']].forEach(([k, n]) => {
+    const b = el('button', 'chip', n); b.id = 'f-' + k; b.dataset.k = k;
+    b.onclick = () => { filter = k; render(); }; fl.append(b);
+  });
+
+  function render(){
+    tabs.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.k === tab));
+    fl.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', b.dataset.k === filter));
+    const box = document.getElementById('stories'); box.replaceChildren();
+    R.projects.filter(p => tab === 'all' || p.key === tab).forEach(p => {
+      const items = p.items.filter(i => filter === 'all' || i.status === filter);
+      const sec = el('section', 'proj'); const h = el('h2', null, p.name);
+      const nProd = p.items.filter(i => i.status === 'prod').length;
+      h.append(el('small', null, nProd + '/' + p.items.length + ' ขึ้นจริง')); sec.append(h);
+      if (!items.length) sec.append(el('p', 'empty', 'ไม่มีงานในสถานะนี้'));
+      items.forEach((it, i) => {
+        const d = el('details', 'story'); const s = el('summary');
+        const num = el('span', 'num'); num.append(el('span', 'chev', '›'), ' ' + (i + 1));
+        const h3 = el('h3', null, it.title); h3.append(el('span', 'gist', it.gist));
+        s.append(num, h3, el('span', 'pill s-' + it.status, LABEL[it.status])); d.append(s);
+        const body = el('div', 'body');
+        if (it.points.length) { const ul = el('ul'); it.points.forEach(t => ul.append(el('li', null, t))); body.append(ul); }
+        if (it.refs) body.append(el('div', 'refs', it.refs));
+        if (body.childNodes.length) d.append(body); else s.style.cursor = 'default';
+        sec.append(d);
+      });
+      box.append(sec);
+    });
+    const list = (id, rows, f) => { const u = document.getElementById(id); u.replaceChildren(); rows.forEach(r => u.append(f(r))); };
+    const mine = r => tab === 'all' || r.p === tab;
+    const withTag = r => { const li = el('li', null, r.t); if (tab === 'all') li.append(el('span', 'tagp', NAME[r.p] || r.p)); return li; };
+    const off = R.offgit.filter(mine);
+    list('offgit', off.length ? off : [{t:'ไม่มี'}], withTag);
+    const nx = R.next.filter(mine);
+    list('next', nx.length ? nx : [{t:'ไม่มี'}], r => { const li = withTag(r); if (r.urgent) li.prepend(el('span', 'pill s-urgent', 'เร่ง'), ' '); return li; });
+    document.getElementById('unsureSec').hidden = !(R.unsure || []).length;
+    list('unsure', R.unsure || [], t => el('li', null, t));
+  }
+  render();
+  addEventListener('hashchange', () => { const k = location.hash.slice(1); if (k === 'all' || NAME[k]) { tab = k; render(); } });
+})();
+</script>
