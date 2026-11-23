@@ -32,6 +32,7 @@ npx skills add thannnp/thananan-p-skills --skill horo-db
 | `tailwind-snap` | Snaps px values from a design onto the nearest Tailwind token instead of arbitrary values (`text-[13px]` → `text-xs`, `p-[15px]` → `p-4`). Covers every scale — spacing, font size, line height, radius, border, shadow, tracking, opacity — reads the project's `@theme` first so project tokens win over framework defaults, and reports the resulting drift. Ships an audit script for sweeping existing markup. Token values verified against `tailwindcss@4.3.1`; v3 differences documented. |
 | `clio-brownbook` | Weekly work log — the writing half of a two-part setup (the reading half, `clio-echo`, lives on a personal-secretary box and only reads the finished note). Pulls the week's real activity from PRs opened, PRs reviewed, issues touched, local commits, and the prompts typed in Claude Code — that last source catches the work that leaves no git trace: prod firefighting, database permissions, chasing someone else's ticket. Marks every item with where it actually landed: shipped to production, merged to `dev` but not yet released, or still on a branch. Handles repos whose `main` and `dev` histories diverged permanently, and flags a PR that reads as merged while its sha is nowhere in `main`. |
 | `clio-echo` | The reading half of `clio-brownbook`, meant for a personal-secretary agent that cannot reach your machine. Reads the finished weekly note out of the log repo and answers from it; nudges on Friday when the week is still empty. Named for the nymph who could only repeat what others had already said — it writes nothing, and holds no raw material to invent from. Needs one fine-grained token scoped to the log repo with `Contents: Read`; it can reach no other repository. |
+| `nightcamp` | Q&A and build planning for the game Night Camp (play.nightcamp.app). Downloads the game's own wiki data on first use (not shipped here) — 46 jobs with every skill level, 2,130 gear pieces, 482 monsters with drop rates, maps, quests, runes, keystones, relics, stat formulas — with Thai names from the wiki's own translation. Ships `nc.py` to search by English or Thai name, list a job's skills, find who drops an item, and filter gear. |
 
 ## Repo structure
 
@@ -66,6 +67,10 @@ thananan-p-skills/
     │       ├── outline.py                        # compact views of that JSON, so the full file is never read
     │       ├── redact.py                         # strips PR bodies and typed prompts, for the copy the reader may see
     │       └── publish.sh                        # pushes note + redacted data to a private log repo
+    ├── nightcamp/
+    │   ├── SKILL.md                              # data map, stat formulas, build workflow (Thai)
+    │   └── scripts/
+    │       └── nc.py                             # find/show/job/drops/map/items/get; downloads data on first run
     └── clio-echo/
         ├── SKILL.md                              # read-only rules: answer from the note, never invent
         └── scripts/
